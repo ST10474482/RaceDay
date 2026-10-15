@@ -1,0 +1,76 @@
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Controllers;
+using RaceDay.Data;
+using RaceDay.Models;
+using Xunit;
+
+namespace RaceDay.Tests
+{
+    public class EventsControllerTests
+    {
+        private static RaceDayDbContext CreateContext()
+        {
+            var options = new DbContextOptionsBuilder<RaceDayDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            return new RaceDayDbContext(options);
+        }
+
+        private static EventsController CreateController(
+            RaceDayDbContext context,
+            int? userId,
+            string? role)
+        {
+            var controller = new EventsController(context);
+            var httpContext = new DefaultHttpContext
+            {
+                Session = new TestSession()
+            };
+
+            if (userId.HasValue)
+                httpContext.Session.SetInt32("UserID", userId.Value);
+
+            if (role != null)
+                httpContext.Session.SetString("Role", role);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            return controller;
+        }
+
+        [Fact]
+        public async Task CreateEvent_WhenNotLoggedIn_Returns401()
+        {
+            using var context = CreateContext();
+            var controller = CreateController(context, null, null);
+
+            var result = await controller.CreateEvent(new Event());
+
+            var response = Assert.IsType<UnauthorizedObjectResult>(
+                result.Result);
+
+            Assert.Equal(401, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateEvent_WhenParticipant_Returns403()
+        {
+            using var context = CreateContext();
+            var controller = CreateController(context, 1, "Participant");
+
+            var result = await controller.CreateEvent(new Event());
+
+            var response = Assert.IsType<ObjectResult>(result.Result);
+
+            Assert.Equal(403, response.StatusCode);
+        }
+    }
+}
