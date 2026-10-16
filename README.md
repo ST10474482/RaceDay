@@ -1,8 +1,8 @@
-RaceDay API
+#RaceDay API
 
 RaceDay is an ASP.NET Core Web API for managing race events, participant registrations, organizers, categories, and race results. It uses Entity Framework Core and SQL Server for data storage.
 
-Features
+#Features
 User registration and login
 Participant and Organizer roles
 Profile management
@@ -20,7 +20,8 @@ Clone or download the repository.
 Configure the DefaultConnection connection string in appsettings.json to point to your SQL Server database.
 Run the application from Visual Studio or with dotnet run.
 Open /swagger in your browser to test the API endpoints.
-API Routes
+
+#API Routes
 /api/Auth — Registration, login, and logout
 /api/Profile — User profile management
 /api/Organizers — Organizer profiles
@@ -28,6 +29,6 @@ API Routes
 /api/Events — Race events
 /api/Enrollments — Participant enrollments
 /api/Results — Race results
-Database
+#Database
 
 The application uses SQL Server through Entity Framework Core. Ensure the connection string is configured correctly before running the API.
